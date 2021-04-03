@@ -1,0 +1,23 @@
+Programming Assignment #4
+Breadth First Search and Shortest Paths in Graphs
+Created by: Nicholas Scagliotti
+nscaglio@ucsc.edu
+CMPS 101
+Fall '18
+
+
+List.h				Header file for the associated List.c file.
+
+List.c 				Code for the linked list with cursors and indexes, and the ability to traverse the list and perform various operations.
+
+Graph.h 			Header file for the associated List.c file.
+
+Graph.c 			Code for the graph adt and associated functions
+
+GraphTest.c 		        Code to test List.c and Graph.c.
+
+FindPath.c 			Main function intented to perform BFS to find shortest path between two points.
+
+Makefile			Makefile to quickly compile the program using the make function.
+
+README				Table of Contents
