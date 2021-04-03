@@ -1,0 +1,15 @@
+Final Project
+Implementing a Simple Router
+Created by: Nicholas Scagliotti
+nscaglio@ucsc.edu
+Student# 1676930
+CSE150
+Fall '20
+
+final_skel.properly         Mininet topology provided by the instructor that was modified to create the
+                            desired topology, as presented in the PDF detailing our assignment.
+
+finalcontroller_skel.py     Mininet controller provided by the instructor that was modified to properly
+                            funnel desired traffic from various hosts to either be flooded or dropped.
+
+README.txt                  Table of contents.
