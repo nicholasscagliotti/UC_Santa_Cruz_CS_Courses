@@ -1,1 +1,1 @@
-CS101: Introduction to Data Structures and Algorithms
+CSE101: Introduction to Data Structures and Algorithms
