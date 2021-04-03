@@ -1,0 +1,16 @@
+Lab 1
+Installing and Using Mininet
+Created by: Nicholas Scagliotti
+nscaglio@ucsc.edu
+Student# 1676930
+CSE150
+Fall '20
+
+nicholasscagliotti-script.sh        Shell script to print out even numbered lines of each 
+                                    file in the current directory. 
+
+
+nicholasscagliotti-topo.py          Mininet topology with additional 2 hosts, making for 
+                                    a total of 4 hosts connected to 1 switch.
+
+README				    Table of contents.
