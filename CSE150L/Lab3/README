@@ -1,0 +1,17 @@
+Lab 3
+Simple Firewall using OpenFlow
+Created by: Nicholas Scagliotti
+nscaglio@ucsc.edu
+Student# 1676930
+CSE150
+Fall '20
+
+lab3controller.py         Python code containing a framework provided by the instructor. 
+                          It has been edited to create a simple firewall that allows only
+                          ARP, TCP, and IPV4 traffic through, dropping all other packets. 
+									
+lab3.py                   Mininet topology provided by the intstructor that was 
+                          utilized for the lab. This python file will not be submitted
+                          with the other contents of this README.
+
+README                    Table of contents.
