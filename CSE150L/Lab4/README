@@ -6,7 +6,7 @@ Student# 1676930
 CSE150
 Fall '20
 
-final_skel.properly         Mininet topology provided by the instructor that was modified to create the
+final_skel.py         Mininet topology provided by the instructor that was modified to create the
                             desired topology, as presented in the PDF detailing our assignment.
 
 finalcontroller_skel.py     Mininet controller provided by the instructor that was modified to properly
