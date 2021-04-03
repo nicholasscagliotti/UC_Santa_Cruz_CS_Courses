@@ -5,8 +5,7 @@ nscaglio@ucsc.edu
 CMPS101
 Fall '18
 
-Sparse.java			Code to scan text files for int lists, organize them into a matrix, and save the output files. Also displays various tests on the matrices provided 
-                              from the input.
+Sparse.java			Code to scan text files for int lists, organize them into a matrix, and save the output files. Also displays various tests on the matrices provided from the input.
 
 Matrix.java			Code to create a matrix by creating a linked list of linked lists. Also contains various mathematical operations such as adding, subtracting, and multiplying, to perform on matrices.
 
