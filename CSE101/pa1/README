@@ -1,0 +1,16 @@
+Programming Assignment #1
+Integer List ADT
+Created by: Nicholas Scagliotti
+nscaglio@ucsc.edu
+CMPS101
+Fall '18
+
+List.java 			Code for the linked list with cursors and indexes, and the ability to traverse the list and perform various operations.
+
+ListClient.Java		        Code to test List.java, provided by professor.
+
+Lex.Java			Code to scan text files for string lists, organize them in alphabetical order, and save the alphabetized list of strings to output files.
+
+Makefile			Makefile to quickly compile the program using the make function.
+
+README				Table of Contents
