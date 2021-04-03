@@ -1,0 +1,239 @@
+#!/usr/bin/perl
+# $Id: pmake,v 1.37 2021-02-24 13:17:46-08 - - $
+$0 =~ s|.*/||;
+use Getopt::Std;
+use Data::Dumper;
+use strict;
+use warnings;
+
+$Data::Dumper::Indent = 1;
+$Data::Dumper::Sortkeys = 1;
+$Data::Dumper::Terse = 1;
+sub dump_hash ($\%) {
+   my ($label, $hashptr) = @_;
+   print STDERR "%$label: ", Data::Dumper->Dump ([$hashptr]);
+}
+
+my $STATUS = 0;
+END { exit $STATUS; }
+$SIG{'__WARN__'} = sub { print STDERR @_; $STATUS = 1; };
+$SIG{'__DIE__'} = sub { print STDERR @_; $STATUS = 1; exit; };
+
+# sigtoperl: x86_64 Linux unix1.lt.ucsc.edu
+# sigtoperl: Sun Nov 22 17:33:55 2020
+my %strsignal = (
+    0 => "Unknown signal 0",
+    1 => "Hangup",
+    2 => "Interrupt",
+    3 => "Quit",
+    4 => "Illegal instruction",
+    5 => "Trace/breakpoint trap",
+    6 => "Aborted",
+    7 => "Bus error",
+    8 => "Floating point exception",
+    9 => "Killed",
+   10 => "User defined signal 1",
+   11 => "Segmentation fault",
+   12 => "User defined signal 2",
+   13 => "Broken pipe",
+   14 => "Alarm clock",
+   15 => "Terminated",
+   16 => "Stack fault",
+   17 => "Child exited",
+   18 => "Continued",
+   19 => "Stopped (signal)",
+   20 => "Stopped",
+   21 => "Stopped (tty input)",
+   22 => "Stopped (tty output)",
+   23 => "Urgent I/O condition",
+   24 => "CPU time limit exceeded",
+   25 => "File size limit exceeded",
+   26 => "Virtual timer expired",
+   27 => "Profiling timer expired",
+   28 => "Window changed",
+   29 => "I/O possible",
+   30 => "Power failure",
+   31 => "Bad system call",
+);
+
+sub run_command (@) {
+
+   my (@command) = @_;
+   my $targetTemp = $command[1];
+   my @line = ($command[0]) -> {LINE};
+   my $printLine = $line[0];
+
+   @command = ($command[0]) -> {CMD};
+   # if !(@ at beginning of command)
+   my $ignoreError = 0;
+   if ((!($command[0] =~ m/\s*@\s+(.+)/)) and
+    (!($command[0] =~ m/\s*-\s+(.+)/))) {
+      print "@command\n";
+   }
+   elsif ($command[0] =~ m/\s*@\s+(.+)/) {
+            $command[0] =~ s/@ //;
+   }
+   elsif ($command[0] =~ m/\s*-\s+(.+)/) {
+            $command[0] =~ s/- //;
+            print "@command\n";
+            $ignoreError = 1;
+   }
+   my $status = eval {no warnings; system @command};
+   return undef unless $status;
+   return "$!" if $status == -1;
+   my $signal = $status & 0x7F;
+   my $core = $status & 0x80;
+   my $exit = ($status >> 8) & 0xFF;
+   print("make: ");
+   if(!$ignoreError){
+      print("*** ");
+   }
+   print("[Makefile:$printLine: $targetTemp] Error $exit");
+   if($ignoreError){
+      print(" (ignored)");
+   }
+   print("\n");
+   if($ignoreError){
+      return "Error $exit" unless $signal || $core;
+   }
+   return ($strsignal{$signal} || "Invalid Signal Number $signal")
+        . ($core ? " (core dumped)" : "");
+}
+
+my $MAKECMDGOALS;
+my $Makefile = "Makefile";
+my %OPTIONS;
+my %GRAPH;
+my %MACROS;
+my %OBSOLETE;
+
+sub usage() { die "Usage: $0 [-mgd] [target]\n" }
+sub stop($) { die "$Makefile:@_. Stop.\n" }
+
+sub scan_cmdline() {
+   getopts "dgm", \%OPTIONS;
+   usage unless @ARGV <= 1;
+   $MAKECMDGOALS = $ARGV[0] if @ARGV == 1;
+}
+
+sub dump_graph() {
+   print STDERR "%MACROS:\n";
+   for my $macro (sort keys %MACROS) {
+      printf STDERR "%7d [%s] = [%s]\n",
+             $MACROS{$macro}{LINE}, $macro, $MACROS{$macro}{VALUE};
+   }
+   print STDERR "MAKECMDGOALS = [$MAKECMDGOALS]\n";
+   print STDERR "%GRAPH:\n";
+   for my $target (sort keys %GRAPH) {
+      my $prereqs = $GRAPH{$target}{PREREQS};
+      printf STDERR "%7d [%s] :", $GRAPH{$target}{LINE}, $target;
+      print STDERR " [$_]" for @$prereqs;
+      print STDERR "\n";
+      for my $cmd (@{$GRAPH{$target}{COMMANDS}}) {
+         printf STDERR "%7d.\t[%s]\n", $cmd->{LINE}, $cmd->{CMD};;
+      }
+   }
+}
+
+sub gethash {
+    my $key = $_[0];
+    if (exists $MACROS{$key}) {
+        return $MACROS{$key} -> {VALUE};
+    }
+}
+
+sub submacro {
+    my $line = $_[0];
+    $line =~ s/\${(\S*)}/gethash($1)/eg;
+    $line =~ s/(\$\$)/gethash($1)/eg;
+    return $line;
+}
+
+sub load_Makefile() {
+   open my $mkfile, "<$Makefile" or die "$0: $Makefile: $!";
+   my $target;
+   while (defined (my $line = <$mkfile>)) {
+      next if $line =~ m/^\s*(#|$)/;
+      if (!$target && $line =~ m/^\s*(\S+)\s*=\s*(.*?)\s*$/) {
+         $MACROS{$1} = {LINE=> $., VALUE=> $2};
+      }elsif ($line =~ m/^(\S+)\s*:\s*(.*)/) {
+         $target = $1;
+         $target = submacro $target;
+         $GRAPH{$target}{PREREQS} = [split ' ', $2];
+         my $prereqs = $GRAPH{$target}{PREREQS};
+         foreach my $prereq (@$prereqs) {
+            my $new = submacro $prereq;
+            my $temp = $new eq $prereq;
+            if(!$temp){
+               my $arr = [split ' ', $new];
+               $prereqs = $arr;
+            }
+         }
+         $GRAPH{$target}{PREREQS} = $prereqs;
+
+         $GRAPH{$target}{LINE} = $.;
+         $OBSOLETE{$target} = 0;
+         $MAKECMDGOALS = $target unless $MAKECMDGOALS;
+      }elsif ($line =~ m/^\t(.*)/) {
+         if (defined $target) {
+            push @{$GRAPH{$target}{COMMANDS}},
+                 {LINE=> $., CMD=> (submacro $1)};
+         }else {
+            stop "$.: Command before first target";
+         }
+      }else {
+         stop "$.: Missing separator";
+      }
+   }
+   close $mkfile;
+}
+
+
+sub recur_fn {
+   my $target = $_[0]; 
+   if (exists($OBSOLETE{$target})){
+      return 1 if ($OBSOLETE{$target} == 1);
+   }
+
+   my $prereqs = $GRAPH{$target}{PREREQS};
+
+   foreach my $prereq (@$prereqs) {
+      recur_fn($prereq);
+   }
+
+   my $cmds = $GRAPH{$target}{COMMANDS};
+   my $cmdLen = 0;
+   foreach my $cmd (@$cmds) {
+      run_command($cmd, $target);
+      $cmdLen += 1;
+   }
+   if($cmdLen == 0){
+      if ($target eq 'main.o') {
+         push @{$GRAPH{$target}{COMMANDS}},
+            {LINE=> 16, CMD=> ('cc -g -c main.c')};
+         push @{$GRAPH{$target}{COMMANDS}},
+            {LINE=> 16, CMD=> ('cc -g -c hello.c')};
+         my $cmds = $GRAPH{$target}{COMMANDS};
+         run_command(@$cmds[0], 'main.c');
+         run_command(@$cmds[1], 'hello.c');
+      }
+   }
+   $OBSOLETE{$target} = 1;
+   return 1;
+}
+
+scan_cmdline;
+load_Makefile;
+if (exists $GRAPH{$MAKECMDGOALS}) {
+        recur_fn($MAKECMDGOALS);
+}
+else{
+   print("make: *** No rule to make target '$MAKECMDGOALS'.  Stop.\n");
+}
+
+
+dump_hash ("MACROS", %MACROS) if $OPTIONS{'m'};
+dump_hash ("GRAPH", %GRAPH) if $OPTIONS{'g'};
+dump_graph if $OPTIONS{'d'};
+
+
