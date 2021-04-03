@@ -1,0 +1,19 @@
+Programming Assignment #2
+Integer List ADT (Written in C)
+Created by: Nicholas Scagliotti
+nscaglio@ucsc.edu
+CMPS 101
+Fall '18
+
+
+List.h				Header file for the associated List.c file.
+
+List.c 				Code for the linked list with cursors and indexes, and the ability to traverse the list and perform various operations.
+
+Lex.c 				Code to scan text files for string lists, organize them in alphabetical order, and save the alphabetized list of strings to output files.
+
+ListClient.c 		        Code to test List.c and List.h, provided by professor.
+
+Makefile			Makefile to quickly compile the program using the make function.
+
+README				Table of Contents
