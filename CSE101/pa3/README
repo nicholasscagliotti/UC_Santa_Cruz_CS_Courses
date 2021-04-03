@@ -1,0 +1,20 @@
+Programming Assignment #3
+Matrix ADT
+Created by: Nicholas Scagliotti
+nscaglio@ucsc.edu
+CMPS101
+Fall '18
+
+Sparse.java			Code to scan text files for int lists, organize them into a matrix, and save the output files. Also displays various tests on the matrices provided from the input.
+
+Matrix.java			Code to create a matrix by creating a linked list of linked lists. Also contains various mathematical operations such as adding, subtracting, and multiplying, to perform on matrices.
+
+List.java 			Code for the linked list with cursors and indexes, and the ability to traverse the list and perform various operations.
+
+MatrixTest.java		        Code to test the Matrix.java file and the functions residing within it.
+
+ListTest.java		        Code to test the List.java file and the functions residing within it.
+
+Makefile			Makefile to quickly compile the program using the make function.
+
+README				Table of Contents
