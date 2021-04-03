@@ -1,0 +1,21 @@
+CSE 112 Winter 2021: Mini Basic Language Interpreter in Scheme
+By: Nicholas Scagliotti (nscaglio) Rahul Arora (raarora)
+Due: 1/24/2021
+Contents:
+mbir.scm - Designed to read and interpet a program written in the MBIR language
+README - Table of contents for files in asg1
+PARTNER - Partner file containing only the respective partner's student ID
+
+We are working together doing pair programming.
+All of the work submitted here is code written by us,
+except for code copied from the instructor’s directories.
+We both have read and understood the UC Santa Cruz
+Academic Misconduct Policy for Undergraduates.
+https://ue.ucsc.edu/academic-misconduct.html
+We acknowledge that each partner in a programming pair is
+responsible for the work performed by the other partner,
+and all work has been reviewed by both partners working
+together. Both of us know the format of the PARTNER file.
+
+-- Nicholas Scagliotti (nscaglio@ucsc.edu)
+-- Rahul Arora (raarora@ucsc.edu)
